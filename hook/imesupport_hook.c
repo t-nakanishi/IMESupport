@@ -67,16 +67,15 @@ EXPORT BOOL SetInlinePosition(HWND hWnd, int x, int y, int font_height)
 {
 	BOOL ret = FALSE;
 	HIMC hIMC = ImmGetContext(hWnd);
-
 	if (ImmGetOpenStatus(hIMC)) {
 		COMPOSITIONFORM cf = {0};
 		cf.dwStyle = CFS_POINT;
 		cf.ptCurrentPos.x = x;
 		cf.ptCurrentPos.y = y;
+		MapWindowPoints(NULL, hWnd, &cf.ptCurrentPos, 1);
 		if (ImmSetCompositionWindow(hIMC, &cf)) {
 			LOGFONTW lf = {0};
 			lf.lfHeight = font_height;
-			// lf.lfFaceName = font_face;
 			if (ImmSetCompositionFontW(hIMC, &lf)) {
 				ret = TRUE;
 			}
@@ -105,12 +104,21 @@ static LRESULT CALLBACK WindowMessageHookProc(HWND hWnd, UINT msg, WPARAM wParam
 	static int x = INVALID_VALUE;
 	static int y = INVALID_VALUE;
 	static int font_height = INVALID_VALUE;
+	UINT uDpi = 96;
+	float scaling = 1.0;
 
 	switch (msg) {
-	case WM_IME_STARTCOMPOSITION:
-	case WM_IME_COMPOSITION:
+	/* case WM_IME_STARTCOMPOSITION: */
+	/* case WM_IME_COMPOSITION: */
+	case WM_IME_NOTIFY:
 		if (x != INVALID_VALUE && y != INVALID_VALUE && font_height != INVALID_VALUE) {
-			SetInlinePosition(hWnd, x, y, font_height);
+			uDpi = GetDpiForWindow(hWnd);
+
+			scaling = (float) uDpi / 96.0;
+			SetInlinePosition(hWnd,
+												(int) (x * scaling), 
+												(int) (y * scaling),
+												(int) (font_height * scaling));
 		}
 		break;
 	default:
