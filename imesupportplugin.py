@@ -198,6 +198,11 @@ class WindowLayout(object):
         self.settings = sublime.load_settings('IMESupport.sublime-settings')
 
     def calc_cursor_position(self, view, cursor):
+#        if "text_to_window" in dir(view):
+#            p = view.text_to_window(cursor)
+#            font_face, font_height = self.get_font_info(view)
+#            return (int(p[0]) + 2, int(p[1]), font_face, font_height)
+
         abspoint = view.text_to_layout(cursor)
         offset = view.viewport_position()
         p = sub(abspoint, offset)

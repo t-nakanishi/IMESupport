@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include <windows.h>
 #include <stdio.h>
@@ -111,15 +111,12 @@ static LRESULT CALLBACK WindowMessageHookProc(HWND hWnd, UINT msg, WPARAM wParam
 	/* case WM_IME_STARTCOMPOSITION: */
 	/* case WM_IME_COMPOSITION: */
 	case WM_IME_NOTIFY:
-		if (x != INVALID_VALUE && y != INVALID_VALUE && font_height != INVALID_VALUE) {
-			uDpi = GetDpiForWindow(hWnd);
-
-			scaling = (float) uDpi / 96.0;
-			SetInlinePosition(hWnd,
-												(int) (x * scaling), 
-												(int) (y * scaling),
-												(int) (font_height * scaling));
-		}
+		uDpi = GetDpiForWindow(hWnd);
+		scaling = (float) uDpi / 96.0;
+		SetInlinePosition(hWnd,
+                  		(int) (x * scaling), 
+                  		(int) (y * scaling),
+                  		(int) (font_height * scaling));
 		break;
 	default:
 		if (msg == GetMessageId()) {
